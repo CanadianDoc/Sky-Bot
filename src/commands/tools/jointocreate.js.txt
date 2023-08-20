@@ -1,0 +1,17 @@
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName("jointocreate")
+    .setDescription("Join a voice channel to create a temporary voice channel.")
+    .addChannelOption((option) =>
+      option
+        .setName("channel")
+        .setDescription("The voice channel to join.")
+        .setRequired(true)
+    )
+    .setDMPermission(false)
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
+  async execute(interaction, bot) {},
+};
