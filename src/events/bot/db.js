@@ -1,18 +1,33 @@
-const fs = require("fs");
-const path = require("path");
+const mongoose = require("mongoose");
 
-const votesFilePath = path.join(__dirname, "..", "..", "data", "db.json");
-
-const loadData = (type) => {
-  const data = fs.readFileSync(votesFilePath, "utf8");
-  const parsedData = JSON.parse(data);
-  return new Map(parsedData[type]);
+const getModel = (type) => {
+  try {
+    return mongoose.model(type.charAt(0).toUpperCase() + type.slice(1));
+  } catch (error) {
+    console.error(`Model for type '${type}' not found.`);
+    return null;
+  }
 };
 
-const saveData = (data, type) => {
-  const existingData = JSON.parse(fs.readFileSync(votesFilePath, "utf8"));
-  existingData[type] = [...data];
-  fs.writeFileSync(votesFilePath, JSON.stringify(existingData), "utf8");
+const loadData = async (type) => {
+  const Model = getModel(type);
+  if (!Model) return new Map();
+
+  const data = await Model.find();
+  return new Map(
+    data.map((item) => [`${item.userId}-${item.messageId}`, item])
+  );
+};
+
+const saveData = async (item, type) => {
+  const Model = getModel(type);
+  if (!Model) return;
+
+  await Model.findOneAndUpdate(
+    { userId: item.userId, messageId: item.messageId },
+    item,
+    { upsert: true }
+  );
 };
 
 module.exports = { loadData, saveData };

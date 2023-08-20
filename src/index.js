@@ -8,6 +8,7 @@ const {
 } = require("discord.js");
 
 const fs = require("fs");
+const path = require("path");
 
 const bot = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
@@ -26,12 +27,14 @@ for (const folder of functionFolders) {
   }
 }
 
+/* 
 bot.on("guildMemberAdd", (member) => {
   const role = process.env.newbieRole;
   const autorole = member.guild.roles.cache.get(role);
   if (!autorole) return console.log("No role found");
   member.roles.add(autorole);
 });
+*/
 
 bot.eventHandler();
 bot.commandHandler();

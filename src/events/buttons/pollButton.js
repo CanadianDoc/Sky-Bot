@@ -21,6 +21,7 @@ module.exports = {
     name: "poll",
     description: "handles poll buttons",
   },
+
   async execute(interaction) {
     if (!interaction.isButton()) return;
 
@@ -28,7 +29,10 @@ module.exports = {
     if (arr[0] !== "poll") return;
 
     const userVoteId = `${interaction.user.id}-${interaction.message.id}`;
+
+    const votes = await loadData("poll");
     const userVoted = votes.get(userVoteId);
+
     const newVote = arr[1];
 
     const embed = interaction.message.embeds[0];
@@ -47,8 +51,14 @@ module.exports = {
       });
     } else {
       adjustVotes(embed, userVoted, newVote);
-      votes.set(userVoteId, newVote);
-      saveData(votes, "poll");
+      saveData(
+        {
+          userId: interaction.user.id,
+          messageId: interaction.message.id,
+          vote: newVote,
+        },
+        "poll"
+      );
     }
 
     interaction.message.edit({ embeds: [embed] });

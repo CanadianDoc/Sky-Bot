@@ -28,7 +28,12 @@ module.exports = (bot) => {
           for (const file of eventFiles) {
             const button = require(`../../events/${folder}/${file}`);
             buttons.set(button.data.name, button);
-            tableB.addRow(`${button.data.name}`, "loaded");
+            try {
+              tableB.addRow(`${button.data.name}`, "Loaded");
+            } catch (err) {
+              tableB.addRow(`${button.data.name}`, "Error");
+              console.error(err);
+            }
           }
           break;
 
