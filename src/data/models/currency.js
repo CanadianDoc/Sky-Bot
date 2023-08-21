@@ -6,4 +6,4 @@ const currencySchema = new mongoose.Schema({
   vote: String,
 });
 
-module.exports = mongoose.model("Currency", currencySchema);
+module.exports = mongoose.model("Currency", currencySchema, "currency");

@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("db")
+    .setName("database")
     .setDescription("Shows all of the database models")
     .setDMPermission(false)
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),

@@ -9,25 +9,39 @@ const getModel = (type) => {
   }
 };
 
-const loadData = async (type) => {
-  const Model = getModel(type);
+const loadData = async (collectionName) => {
+  const Model = getModel(collectionName);
   if (!Model) return new Map();
 
-  const data = await Model.find();
-  return new Map(
-    data.map((item) => [`${item.userId}-${item.messageId}`, item])
-  );
+  try {
+    const data = await Model.find();
+    return new Map(
+      data.map((item) => [`${item.userId}-${item.messageId}`, item])
+    );
+  } catch (error) {
+    console.error(
+      `Error loading data for collection '${collectionName}':`,
+      error
+    );
+    return new Map();
+  }
 };
 
-const saveData = async (item, type) => {
-  const Model = getModel(type);
+const saveData = async (item, collectionName) => {
+  const Model = getModel(collectionName);
   if (!Model) return;
 
-  await Model.findOneAndUpdate(
-    { userId: item.userId, messageId: item.messageId },
-    item,
-    { upsert: true }
-  );
+  try {
+    await Model.findOneAndUpdate(
+      { userId: item.userId, messageId: item.messageId },
+      item,
+      { upsert: true }
+    );
+  } catch (error) {
+    console.error(
+      `Error saving data to collection '${collectionName}':`,
+      error
+    );
+  }
 };
-
-module.exports = { loadData, saveData };
+module.exports = { loadData, saveData, getModel };

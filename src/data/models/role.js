@@ -6,4 +6,4 @@ const roleSchema = new mongoose.Schema({
   vote: String,
 });
 
-module.exports = mongoose.model("Role", roleSchema);
+module.exports = mongoose.model("Role", roleSchema, "role");

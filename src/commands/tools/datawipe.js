@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const fs = require("fs");
-const path = require("path");
-const dbFilePath = path.join(__dirname, "..", "..", "data", "db.json");
+const mongoose = require("mongoose");
+const { getModel } = require("../../events/bot/db");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,23 +22,39 @@ module.exports = {
 
   async execute(interaction, bot) {
     const database = interaction.options.getString("database");
+    const collectionNames = await mongoose.connection.db
+      .listCollections()
+      .toArray();
+    const collectionList = collectionNames.map((col) => col.name);
 
-    let dbData = JSON.parse(fs.readFileSync(dbFilePath, "utf8"));
+    try {
+      if (database === "all") {
+        for (const collection of collectionList) {
+          const model = getModel(collection);
+          await model.deleteMany({});
+        }
+      } else {
+        if (collectionList.includes(database)) {
+          const model = getModel(database);
+          await model.deleteMany({});
+        } else {
+          return interaction.reply({
+            content: "Database not found",
+            ephemeral: true,
+          });
+        }
+      }
 
-    if (database === "poll") {
-      dbData.poll = [];
-    } else if (database === "attendance") {
-      dbData.attendance = [];
-    } else if (database === "all") {
-      dbData.poll = [];
-      dbData.attendance = [];
+      interaction.reply({
+        content: "Data has been wiped",
+        ephemeral: true,
+      });
+    } catch (error) {
+      console.error("Error wiping the database:", error);
+      interaction.reply({
+        content: "Error occurred while wiping the data. Please try again.",
+        ephemeral: true,
+      });
     }
-
-    fs.writeFileSync(dbFilePath, JSON.stringify(dbData), "utf8");
-
-    interaction.reply({
-      content: "Data has been wiped",
-      ephemeral: true,
-    });
   },
 };

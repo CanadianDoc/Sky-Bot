@@ -6,24 +6,24 @@ const {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("closepoll")
-    .setDescription("Closes the poll. . .")
+    .setName("closeattendance")
+    .setDescription("Closes the attendance post. . .")
     .addStringOption((option) =>
       option
-        .setName("pollid")
-        .setDescription("The id of the poll you want to close")
+        .setName("attendanceid")
+        .setDescription("The id of the attendance post you want to close")
         .setRequired(true)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
   async execute(interaction, bot) {
-    const pollid = interaction.options.getString("pollid");
+    const attendanceid = interaction.options.getString("attendanceid");
 
     try {
-      const msg = await interaction.channel.messages.cache.get(pollid);
+      const msg = await interaction.channel.messages.cache.get(attendanceid);
       if (!msg) {
         return interaction.reply({
-          content: "Poll not found",
+          content: "Attendance Post not found",
           ephemeral: true,
         });
       }
@@ -31,23 +31,27 @@ module.exports = {
       const embed = msg.embeds[0];
       if (!embed) {
         return interaction.reply({
-          content: "Poll can't be closed",
+          content: "Attendance Post can't be closed",
           ephemeral: true,
         });
       }
-
-      //console.log(embed);
+      const adjustedFields = embed.fields.map((field) => {
+        if (field.value === "") {
+          field.value = " ";
+        }
+        return field;
+      });
 
       const newEmbed = new EmbedBuilder()
         .setTitle(embed.title + " (Closed)")
         .setDescription(embed.description)
         .setColor(embed.color)
-        .addFields(embed.fields)
+        .addFields(adjustedFields)
         .setTimestamp(Date.now());
       await msg.edit({ embeds: [newEmbed], components: [] });
 
       interaction.reply({
-        content: "Poll closed",
+        content: "Attendance Post closed",
         ephemeral: true,
       });
     } catch (err) {

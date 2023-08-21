@@ -6,4 +6,4 @@ const inventorySchema = new mongoose.Schema({
   vote: String,
 });
 
-module.exports = mongoose.model("Inventory", inventorySchema);
+module.exports = mongoose.model("Inventory", inventorySchema, "inventory");

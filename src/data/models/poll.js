@@ -6,4 +6,4 @@ const pollSchema = new mongoose.Schema({
   vote: String,
 });
 
-module.exports = mongoose.model("Poll", pollSchema);
+module.exports = mongoose.model("Poll", pollSchema, "poll");
