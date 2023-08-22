@@ -14,14 +14,24 @@ module.exports = {
         .addChoices(
           { name: "Poll", value: "poll" },
           { name: "Attendance", value: "attendance" },
+          { name: "Inventory", value: "inventory" },
           { name: "All", value: "all" }
         )
+    )
+    .addStringOption((option) =>
+      option
+        .setName("input")
+        .setDescription(
+          "The user id of the user to wipe, type confirm to wipe everything"
+        )
+        .setRequired(true)
     )
     .setDMPermission(false)
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction, bot) {
     const database = interaction.options.getString("database");
+    const input = interaction.options.getString("input");
     const collectionNames = await mongoose.connection.db
       .listCollections()
       .toArray();
@@ -31,12 +41,20 @@ module.exports = {
       if (database === "all") {
         for (const collection of collectionList) {
           const model = getModel(collection);
-          await model.deleteMany({});
+          if (input === "confirm") {
+            await model.deleteMany({});
+          } else {
+            await model.deleteMany({ userId: input });
+          }
         }
       } else {
         if (collectionList.includes(database)) {
           const model = getModel(database);
-          await model.deleteMany({});
+          if (input === "confirm") {
+            await model.deleteMany({});
+          } else {
+            await model.deleteMany({ userId: input });
+          }
         } else {
           return interaction.reply({
             content: "Database not found",

@@ -37,9 +37,9 @@ module.exports = {
           }
           break;
 
-        case "role":
+        case "signup":
           {
-            buttonHandler = require("../buttons/roleButton.js");
+            buttonHandler = require("../buttons/signupButton.js");
           }
           break;
 
